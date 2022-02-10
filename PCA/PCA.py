@@ -9,29 +9,31 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 def extractData(filePath):
+    #...... Purpose: extracts numeric data
     df = pd.read_csv(filePath,header=None)
     print(df.head())
     dim = df.shape
     rows = dim[0]
     cols = dim[1]
     data = df.iloc[1:rows,1:cols]
-    # features = df.iloc[0,1:cols]
     return data
 
 def PCAfunc(data): 
-    covarMatrix = PCA(n_components=5) # we have 5 features
+    #..... calculates variance ratios for all components and determines no of dimensions needed to capture 75% var
+    covarMatrix = PCA(n_components=5) # because 5 features in the dataset
     covarMatrix.fit(data)
     var = np.cumsum(np.round(covarMatrix.explained_variance_ratio_,decimals=3)*100) #calculate variance ratios
+    # plot all variance ratios
     plt.ylabel('% Variance Explained')
     plt.xlabel('# of Features')
     plt.title('PCA Analysis')
     plt.ylim(30,100.5)
     plt.style.context('seaborn-whitegrid')
     plt.plot(var)
+    # components needed to capture 75% variance
     dim = 0
     targetVar = 0
     for i in var:
@@ -42,10 +44,8 @@ def PCAfunc(data):
             dim = dim + 1
     return dim
 
-
 # def plotbygroup: 
 # def plotRE with dim 
-
 
 if __name__ == "__main__":
     filePath = "/Users/zsj24/GitHub/ML-Methods/PCA/diseases_subset.csv"
