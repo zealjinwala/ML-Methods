@@ -19,11 +19,11 @@ def extractData(filePath):
     rows = dim[0]
     cols = dim[1]
     data = df.iloc[1:rows,1:cols]
-    features = df.iloc[0,1:cols]
-    return data, features 
+    # features = df.iloc[0,1:cols]
+    return data
 
 def PCAfunc(data): 
-    covarMatrix = PCA(n_components=6)# we have 5 features
+    covarMatrix = PCA(n_components=5) # we have 5 features
     covarMatrix.fit(data)
     var = np.cumsum(np.round(covarMatrix.explained_variance_ratio_,decimals=3)*100) #calculate variance ratios
     plt.ylabel('% Variance Explained')
@@ -32,17 +32,25 @@ def PCAfunc(data):
     plt.ylim(30,100.5)
     plt.style.context('seaborn-whitegrid')
     plt.plot(var)
-    return var
+    dim = 0
+    targetVar = 0
+    for i in var:
+        if i>=75:
+            break
+        else:
+            targetVar = targetVar + i 
+            dim = dim + 1
+    return dim
+
 
 # def plotbygroup: 
+# def plotRE with dim 
 
-
-
-# see how much variance is captured with 2 components
-# how many components will gcapture 75% variance? Ans: x components
-# what is the reconstruction error with X components
 
 if __name__ == "__main__":
     filePath = "/Users/zsj24/GitHub/ML-Methods/PCA/diseases_subset.csv"
-    [data, features] = extractData(filePath)
-    tvalues = PCAfunc(data)
+    data = extractData(filePath)
+    noOfDimensions = PCAfunc(data)
+    print("Number of dimensions needed to captute 75% variance: ", noOfDimensions)
+
+
