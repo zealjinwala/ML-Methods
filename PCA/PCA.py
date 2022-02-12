@@ -12,20 +12,23 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 def extractData(filePath):
-    #...... Purpose: extracts numeric data
+    #...... Purpose: data wranging
     df = pd.read_csv(filePath,header=None)
     print(df.head())
     dim = df.shape
     rows = dim[0]
     cols = dim[1]
     data = df.iloc[1:rows,1:cols]
-    return data
+    tdata = data.transpose()
+    return tdata
 
-def PCAfunc(data): 
+def PCAfunc(tdata): 
     #..... calculates variance ratios for all components and determines no of dimensions needed to capture 75% var
     covarMatrix = PCA(n_components=5) # because 5 features in the dataset
-    covarMatrix.fit(data)
-    var = np.cumsum(np.round(covarMatrix.explained_variance_ratio_,decimals=3)*100) #calculate variance ratios
+    covarMatrix.fit(tdata)
+    varianceRatios = covarMatrix.explained_variance_ratio_ #get variance ratios
+    variance = covarMatrix.get_covariance() # Compute data covariance with the generative model
+    var = np.cumsum(np.round(covarMatrix.explained_variance_ratio_,decimals=3)*100) #calculate variance ratio percent
     # plot all variance ratios
     plt.ylabel('% Variance Explained')
     plt.xlabel('# of Features')
@@ -45,7 +48,10 @@ def PCAfunc(data):
     return dim
 
 # def plotbygroup: 
-# def plotRE with dim 
+# def plotRE(tdata,dim):
+#     X = tdata - tdata.mean()
+#     print(X)
+
 
 if __name__ == "__main__":
     filePath = "/Users/zsj24/GitHub/ML-Methods/PCA/diseases_subset.csv"
